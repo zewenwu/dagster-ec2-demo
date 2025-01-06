@@ -6,14 +6,22 @@ sudo yum install postgresql12 -y
 
 # PostgreSQL connection details (TO BE UPDATED)
 export DB_HOST=airbnbdb.cfatkqyhlt8k.us-east-1.rds.amazonaws.com
-export DB_USER=dbadmin
-export DB_PASS='ZPZk5xloqAoR2eICAxdO54YGHlsSuPNl'
-export DB_PORT=5432  # Ensure this matches your RDS instance port
+export DB_PORT=5432
+export LOCAL_DB_HOST=localhost
+export LOCAL_DB_PORT=5433
+
+aws ssm start-session \
+    --target i-0a876644a869cf1ef \
+    --document-name AWS-StartPortForwardingSessionToRemoteHost \
+    --parameters "{\"host\":[\"$DB_HOST\"],\"portNumber\":[\"$DB_PORT\"], \"localPortNumber\":[\"$LOCAL_DB_PORT\"]}"
+
+export DB_USER=dbadmin # TODO: read from Secrets Manager
+export DB_PASS='xxx'
 export DB_NAME=airbnbdb
 
 # Connect to the MySQL server
 echo "Connecting to PostgreSQL server..."
-PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT version();"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT version();"
 
 # Go to the home directory
 cd ~
@@ -142,4 +150,4 @@ CREATE TABLE reviews (
 );"
 PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "\copy reviews FROM 'reviews.csv' DELIMITER ',' CSV HEADER;"
 
-echo "Data import completed."
+echo "DATA INGESTION COMPLETED!"
