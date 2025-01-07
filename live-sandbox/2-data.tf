@@ -12,10 +12,7 @@ module "database" {
     subnet_ids        = module.vpc.private_subnets_ids["database"]
   }
 
-  allowed_actions = [
-    "rds:DescribeDBInstances",
-    "rds:ListTagsForResource",
-  ]
+  allowed_actions = []
 
   db_username                 = "dbadmin"
   manage_master_user_password = false
@@ -41,11 +38,8 @@ module "jumphost" {
   }
   launch_template_secrets = {}
 
-  ec2_subnet_id = module.vpc.private_subnets_ids["application"][0]
-  allowed_actions = [
-    "ec2:DescribeInstances",
-    "ec2:DescribeInstanceStatus",
-  ]
+  ec2_subnet_id                            = module.vpc.private_subnets_ids["application"][0]
+  allowed_actions                          = []
   allow_additional_sg_ingress_ids          = []
   allow_additional_sg_ingress_service_port = 22
 
