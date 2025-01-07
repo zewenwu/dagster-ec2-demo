@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Install PostgreSQL client
-sudo amazon-linux-extras install postgresql12 -y
-sudo yum install postgresql12 -y
-
 # PostgreSQL connection details (TO BE UPDATED)
 export JUMPHOST_INSTANCE_ID=i-0d601f9cfc56f6459
 export DATA_FOLDER=data/
