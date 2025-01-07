@@ -5,19 +5,26 @@ sudo amazon-linux-extras install postgresql12 -y
 sudo yum install postgresql12 -y
 
 # PostgreSQL connection details (TO BE UPDATED)
+export JUMPHOST_INSTANCE_ID=i-0d601f9cfc56f6459
+export DATA_FOLDER=data/
 export DB_HOST=airbnbdb.cfatkqyhlt8k.us-east-1.rds.amazonaws.com
 export DB_PORT=5432
+export DB_NAME=airbnbdb
+export DB_CREDENTIALS_SECRET_NAME=airbnbdb-rds-master-user-credentials-secret-iaFKe
 export LOCAL_DB_HOST=localhost
 export LOCAL_DB_PORT=5433
 
+# Start an SSM session to the jump host with port forwarding
 aws ssm start-session \
-    --target i-0a876644a869cf1ef \
+    --target $JUMPHOST_INSTANCE_ID \
     --document-name AWS-StartPortForwardingSessionToRemoteHost \
     --parameters "{\"host\":[\"$DB_HOST\"],\"portNumber\":[\"$DB_PORT\"], \"localPortNumber\":[\"$LOCAL_DB_PORT\"]}"
 
-export DB_USER=dbadmin # TODO: read from Secrets Manager
-export DB_PASS='xxx'
-export DB_NAME=airbnbdb
+# Fetch database credentials from AWS Secrets Manager
+SECRET=$(aws secretsmanager get-secret-value --secret-id $DB_CREDENTIALS_SECRET_NAME --query SecretString --output text)
+export DB_USER=$(echo $SECRET | jq -r .username)
+export DB_PASS=$(echo $SECRET | jq -r .password)
+
 
 # Connect to the MySQL server
 echo "Connecting to PostgreSQL server..."
@@ -28,21 +35,21 @@ cd ~
 
 # Download the CSV files
 echo "Downloading CSV files..."
-wget -q https://data.insideairbnb.com/belgium/vlg/antwerp/2024-09-26/data/calendar.csv.gz
-wget -q https://data.insideairbnb.com/belgium/vlg/antwerp/2024-09-26/data/listings.csv.gz
-wget -q https://data.insideairbnb.com/belgium/vlg/antwerp/2024-09-26/data/reviews.csv.gz
+wget -q -P $DATA_FOLDER https://data.insideairbnb.com/belgium/vlg/antwerp/2024-09-26/data/calendar.csv.gz
+wget -q -P $DATA_FOLDER https://data.insideairbnb.com/belgium/vlg/antwerp/2024-09-26/data/listings.csv.gz
+wget -q -P $DATA_FOLDER https://data.insideairbnb.com/belgium/vlg/antwerp/2024-09-26/data/reviews.csv.gz
 
 # Extract the CSV files
 echo "Extracting CSV files..."
-gunzip -f calendar.csv.gz
-gunzip -f listings.csv.gz
-gunzip -f reviews.csv.gz
+gunzip -f $DATA_FOLDER/calendar.csv.gz
+gunzip -f $DATA_FOLDER/listings.csv.gz
+gunzip -f $DATA_FOLDER/reviews.csv.gz
 
 # Create tables and import data into PostgreSQL
 echo "Creating tables and importing data..."
 
 # Create and import calendar table
-PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "
 DROP TABLE IF EXISTS calendar;
 CREATE TABLE calendar (
     listing_id BIGINT,
@@ -53,10 +60,11 @@ CREATE TABLE calendar (
     minimum_nights INTEGER,
     maximum_nights INTEGER
 );"
-PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "\copy calendar FROM 'calendar.csv' DELIMITER ',' CSV HEADER;"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "\copy calendar FROM '$DATA_FOLDER/calendar.csv' DELIMITER ',' CSV HEADER;"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT * FROM calendar LIMIT 5;"
 
 # Create and import listings table
-PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "
 DROP TABLE IF EXISTS listings;
 CREATE TABLE listings (
     id BIGINT,
@@ -135,10 +143,11 @@ CREATE TABLE listings (
     calculated_host_listings_count_shared_rooms INTEGER,
     reviews_per_month NUMERIC
 );"
-PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "\copy listings FROM 'listings.csv' DELIMITER ',' CSV HEADER;"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "\copy listings FROM '$DATA_FOLDER/listings.csv' DELIMITER ',' CSV HEADER;"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT COUNT(*) FROM listings LIMIT 5;"
 
 # Create and import reviews table
-PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "
 DROP TABLE IF EXISTS reviews;
 CREATE TABLE reviews (
     listing_id BIGINT,
@@ -148,6 +157,7 @@ CREATE TABLE reviews (
     reviewer_name TEXT,
     comments TEXT
 );"
-PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "\copy reviews FROM 'reviews.csv' DELIMITER ',' CSV HEADER;"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "\copy reviews FROM '$DATA_FOLDER/reviews.csv' DELIMITER ',' CSV HEADER;"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT COUNT(*) FROM reviews;"
 
 echo "DATA INGESTION COMPLETED!"
