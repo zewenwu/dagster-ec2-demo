@@ -1,19 +1,15 @@
 resource "aws_iam_policy" "consumer" {
-  name   = local.ec2_consumer_policy_name
-  policy = data.aws_iam_policy_document.consumer.json
-}
-
-data "aws_iam_policy_document" "consumer" {
-
-  dynamic "statement" {
-    for_each = length(var.allowed_actions) > 0 ? [1] : []
-    content {
-      sid     = "AllowActionsOnEC2Instance"
-      effect  = "Allow"
-      actions = var.allowed_actions
-      resources = [
-        aws_instance.instance.arn,
-      ]
-    }
-  }
+  count = length(var.allowed_actions) > 0 ? 1 : 0
+  name  = local.ec2_consumer_policy_name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "AllowActionsOnEC2Instance"
+        Effect   = "Allow"
+        Action   = var.allowed_actions
+        Resource = aws_instance.instance.arn
+      }
+    ]
+  })
 }
