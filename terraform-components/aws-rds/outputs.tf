@@ -18,13 +18,18 @@ output "rds_port" {
   description = "The port on which the RDS instance is listening."
 }
 
-output "master_password_secret_arn" {
+output "master_user_credentials_secret_name" {
+  value       = var.manage_master_user_password ? null : aws_secretsmanager_secret.master_user_credentials_secret[0].name
+  description = "The name of the secret containing the master user password for the RDS instance."
+}
+
+output "master_user_credentials_secret_arn" {
   value       = var.manage_master_user_password ? aws_db_instance.database.master_user_secret[0].secret_arn : aws_secretsmanager_secret.master_user_credentials_secret[0].arn
   description = "The ARN of the secret containing the master user password for the RDS instance."
 }
 
 ### Consumer policy
 output "consumer_policy_arn" {
-  value       = aws_iam_policy.consumer.arn
+  value       = length(var.allowed_actions) > 0 ? aws_iam_policy.consumer[0].arn : null
   description = "The ARN of the IAM policy for the consumer."
 }
