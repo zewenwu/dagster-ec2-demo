@@ -1,8 +1,8 @@
 conda-setup:
-	conda create -n pre-commit python=3.12 -y
+	conda create -n demo python=3.12 -y
 
 conda-remove:
-	conda remove -n pre-commit --all -y
+	conda remove -n demo --all -y
 
 setup-reqs:
 	pip install pip-tools
