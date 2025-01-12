@@ -3,3 +3,4 @@ pre-commit
 
 # DBT
 dbt-core
+dbt-postgres

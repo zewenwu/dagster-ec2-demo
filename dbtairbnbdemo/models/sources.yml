@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: airbnb
+    schema: public
+    tables:
+      - name: calendar
+        identifier: calendar
+      - name: listings
+        identifier: listings
+      - name: reviews
+        identifier: reviews

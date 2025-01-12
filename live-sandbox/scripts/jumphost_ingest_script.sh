@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # PostgreSQL connection details (TO BE UPDATED)
-export JUMPHOST_INSTANCE_ID=i-0d601f9cfc56f6459
+export JUMPHOST_INSTANCE_ID=i-058b2ca9d0db48a4f
 export DATA_FOLDER=data/
 export DB_HOST=airbnbdb.cfatkqyhlt8k.us-east-1.rds.amazonaws.com
 export DB_PORT=5432
 export DB_NAME=airbnbdb
-export DB_CREDENTIALS_SECRET_NAME=airbnbdb-rds-master-user-credentials-secret-iaFKe
+export DB_CREDENTIALS_SECRET_NAME=airbnbdb-rds-master-user-credentials-secret-pNyYp
 export LOCAL_DB_HOST=localhost
 export LOCAL_DB_PORT=5433
 
@@ -25,6 +25,7 @@ export DB_PASS=$(echo $SECRET | jq -r .password)
 # Connect to the MySQL server
 echo "Connecting to PostgreSQL server..."
 PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT version();"
+PGPASSWORD=$DB_PASS psql -h $LOCAL_DB_HOST -p $LOCAL_DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT schema_name FROM information_schema.schemata;"
 
 # Go to the home directory
 cd ~
