@@ -5,6 +5,11 @@ output "ec2_name" {
   value       = aws_launch_template.template.name
 }
 
+output "ec2_id" {
+  description = "The ID of the EC2 instance"
+  value       = aws_instance.instance.id
+}
+
 output "ec2_arn" {
   description = "The ARN of the EC2 instance"
   value       = aws_instance.instance.arn
@@ -12,7 +17,7 @@ output "ec2_arn" {
 
 ### EC2 Consumer policy
 output "ec2_consumer_policy_arn" {
-  value       = aws_iam_policy.consumer.arn
+  value       = length(var.allowed_actions) > 0 ? aws_iam_policy.consumer[0].arn : null
   description = "The ARN of the IAM policy for the consumer."
 }
 

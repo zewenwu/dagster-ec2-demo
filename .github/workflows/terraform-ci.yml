@@ -11,6 +11,7 @@ permissions:
 env:
   TERRAFORM_VERSION: 1.10.0
   TFLINT_VERSION: v0.54.0
+  TRIVY_VERSION: v0.58.1
 
 jobs:
   lint:
@@ -18,7 +19,7 @@ jobs:
     steps:
       - name: Checkout github repository
         uses: actions/checkout@v4
-      - name: Install pre-commit
+      - name: Setup pre-commit
         run: sudo apt-get install -y pre-commit
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -28,14 +29,12 @@ jobs:
         uses: terraform-linters/setup-tflint@v4
         with:
           tflint_version: ${{ env.TFLINT_VERSION }}
-      - name: Install Trivy
-        run: |
-          sudo apt-get install -y wget
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install -y trivy
-      - name: Install Terraform Docs
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v0.2.2
+        with:
+          cache: true
+          version: ${{ env.TRIVY_VERSION }}
+      - name: Setup Terraform Docs
         run: |
           sudo apt update
           sudo apt install snapd

@@ -143,7 +143,6 @@ module "database" {
 | [aws_secretsmanager_secret_version.master_user_credentials_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
 | [random_password.master_user_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_string.random_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
-| [aws_iam_policy_document.consumer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs
 
@@ -167,7 +166,8 @@ module "database" {
 | Name | Description |
 |------|-------------|
 | <a name="output_consumer_policy_arn"></a> [consumer\_policy\_arn](#output\_consumer\_policy\_arn) | The ARN of the IAM policy for the consumer. |
-| <a name="output_master_password_secret_arn"></a> [master\_password\_secret\_arn](#output\_master\_password\_secret\_arn) | The ARN of the secret containing the master user password for the RDS instance. |
+| <a name="output_master_user_credentials_secret_arn"></a> [master\_user\_credentials\_secret\_arn](#output\_master\_user\_credentials\_secret\_arn) | The ARN of the secret containing the master user password for the RDS instance. |
+| <a name="output_master_user_credentials_secret_name"></a> [master\_user\_credentials\_secret\_name](#output\_master\_user\_credentials\_secret\_name) | The name of the secret containing the master user password for the RDS instance. |
 | <a name="output_rds_address"></a> [rds\_address](#output\_rds\_address) | The address or endpoint of the RDS instance. |
 | <a name="output_rds_arn"></a> [rds\_arn](#output\_rds\_arn) | The ARN of the RDS instance. |
 | <a name="output_rds_name"></a> [rds\_name](#output\_rds\_name) | The name of the RDS instance. |

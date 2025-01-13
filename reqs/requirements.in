@@ -1,0 +1,6 @@
+# Pre-commit hooks
+pre-commit
+
+# DBT
+dbt-core
+dbt-postgres

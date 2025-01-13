@@ -12,6 +12,7 @@ EOH
     instance_role_policy_arns = map(string)
     block_volume_size         = number
     user_data_path            = string
+    user_data_base64          = string
   })
   default = {
     name          = "webapp"
@@ -24,6 +25,7 @@ EOH
     }
     block_volume_size = 10
     user_data_path    = "user-data/http-example-simple.sh"
+    user_data_base64  = null
   }
 }
 

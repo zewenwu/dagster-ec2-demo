@@ -42,7 +42,7 @@ resource "aws_launch_template" "template" {
     arn = aws_iam_instance_profile.launch_template.arn
   }
 
-  user_data = filebase64(var.launch_template_info.user_data_path)
+  user_data = var.launch_template_info.user_data_base64 == null ? filebase64(var.launch_template_info.user_data_path) : var.launch_template_info.user_data_base64
 
   tag_specifications {
     resource_type = "instance"

@@ -1,23 +1,17 @@
 repos:
-- repo: https://github.com/antonbabenko/pre-commit-terraform
-  rev: v1.90.0
-  hooks:
-    - id: terraform_fmt
-      stages: [commit]
-    - id: terraform_validate
-      stages: [commit]
-    - id: terraform_tflint
-      stages: [commit]
-    - id: terraform_trivy
-      stages: [commit]
-    - id: terraform_docs
-      stages: [commit]
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
-  hooks:
-    - id: end-of-file-fixer
-      stages: [commit]
-    - id: trailing-whitespace
-      stages: [commit]
-    - id: check-merge-conflict
-      stages: [commit]
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.96.3
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_tflint
+      - id: terraform_trivy
+        args:
+        - --hook-config=--parallelism-limit=1
+      - id: terraform_docs
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
