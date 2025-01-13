@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Checkout github repository
         uses: actions/checkout@v4
-      - name: Install pre-commit
+      - name: Setup pre-commit
         run: sudo apt-get install -y pre-commit
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -29,16 +29,16 @@ jobs:
         uses: terraform-linters/setup-tflint@v4
         with:
           tflint_version: ${{ env.TFLINT_VERSION }}
-      # - name: Install Trivy
+      # - name: Setup Trivy
       #   run: |
       #     wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
       #     sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
-      - name: Install Trivy
+      - name: Setup Trivy
         uses: aquasecurity/setup-trivy@v0.2.2
         with:
           cache: true
           version: ${{ env.TRIVY_VERSION }}
-      - name: Install Terraform Docs
+      - name: Setup Terraform Docs
         run: |
           sudo apt update
           sudo apt install snapd
