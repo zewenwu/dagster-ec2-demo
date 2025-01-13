@@ -29,10 +29,6 @@ jobs:
         uses: terraform-linters/setup-tflint@v4
         with:
           tflint_version: ${{ env.TFLINT_VERSION }}
-      # - name: Setup Trivy
-      #   run: |
-      #     wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
-      #     sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
       - name: Setup Trivy
         uses: aquasecurity/setup-trivy@v0.2.2
         with:
