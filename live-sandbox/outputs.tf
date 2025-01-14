@@ -24,6 +24,6 @@ output "database_credentials_secret_name" {
   value = module.database.master_user_credentials_secret_name
 }
 
-output "jumphost_instance_id" {
-  value = module.jumphost.ec2_id
+output "jump_host_instance_id" {
+  value = module.jump_host.ec2_id
 }
