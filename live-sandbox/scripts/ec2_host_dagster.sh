@@ -28,9 +28,9 @@ After=network.target
 
 [Service]
 Environment="DAGSTER_HOME=/opt/dagster/dagster_home"
-ExecStart=/home/ssm-user/miniconda/envs/dagster_env/bin/dagster-webserver -h 0.0.0.0 -p 3000
+ExecStart=/root/miniconda/envs/dagster_env/bin/dagster-webserver -h 0.0.0.0 -p 3000
 Restart=always
-User=ec2-user
+User=root
 
 [Install]
 WantedBy=multi-user.target
@@ -44,9 +44,9 @@ After=network.target
 
 [Service]
 Environment="DAGSTER_HOME=/opt/dagster/dagster_home"
-ExecStart=/home/ssm-user/miniconda/envs/dagster_env/bin/dagster-daemon run
+ExecStart=/root/miniconda/envs/dagster_env/bin/dagster-daemon run
 Restart=always
-User=ec2-user
+User=root
 
 [Install]
 WantedBy=multi-user.target
@@ -62,5 +62,5 @@ sudo systemctl start dagster-daemon
 echo "Dagster webserver and daemon have been set up and started."
 
 # Check the status of the services
-# sudo journalctl -u dagster-webserver -f
-# sudo journalctl -u dagster-daemon -f
+# sudo journalctl -u dagster-webserver
+# sudo journalctl -u dagster-daemon
